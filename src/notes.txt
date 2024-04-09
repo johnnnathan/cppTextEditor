@@ -1,0 +1,17 @@
+interesting methods for the ncurses lib:
+open, close and refresh always.
+raw()
+keypad() maybe
+move()
+addch()
+mvaddch() combination of the previous two, a little difficult to implement for text editor because of UX
+getmaxyx()
+getch() input 
+my_win = create_newwin(height, width, starty, startx); need to create method, not preinstalled and also one to destroy the window when done
+while((ch = getch()) != KEY_F(1))
+scr_dump();
+curs_set();
+
+
+NOTES!!!:
+most functions take in the y-x coordinates, not x-y
