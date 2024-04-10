@@ -5,7 +5,7 @@
 
 int row = 0;
 int col = 0;
-int mode = 0;//should be 0 for insert and 1 for normal
+int mode = 1;//should be 0 for insert and 1 for normal
 
 int max_x;
 int max_y;
@@ -19,12 +19,24 @@ int main (int argc, char *argv[]) {
   keypad(stdscr, TRUE);
   cbreak();
   noecho();
+  row = 0;
+  col = 0;
+  changeMode();
 
   getmaxyx(stdscr, max_y, max_x);
   changeMode();
   while((ch = getch()) != KEY_F(1)){
-    if (mode == 0){
+    if (ch == 127 || ch == KEY_BACKSPACE){
+      moveCursor(-1, 0);
+      delch();
+    }
+    else if (ch == 27){
+      changeMode();
+    }
+    else if (mode == 0){
       addch(ch);
+      col += 1;
+
     }
     else{
       switch (ch) {
@@ -32,10 +44,10 @@ int main (int argc, char *argv[]) {
           moveCursor(-1,0);
           break;
         case 'J': case'j':
-          moveCursor(0,-1);
+          moveCursor(0, 1);
           break;
         case 'K': case 'k':
-          moveCursor(0,1);
+          moveCursor(0,-1);
           break;
         case 'L': case 'l':
           moveCursor(1,0);
@@ -77,4 +89,3 @@ int moveCursor(int colDelta, int rowDelta){
   }
   return 1;
 }
-
