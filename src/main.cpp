@@ -1,11 +1,14 @@
+
+#include <cstdio>
+#include <ncurses.h>
+
+#include <cstdio>
 #include <ncurses.h>
 #include <unistd.h>
 
-
-
 int row = 0;
 int col = 0;
-int mode = 1;//should be 0 for insert and 1 for normal
+int mode = 1; // should be 0 for insert and 1 for normal
 
 int max_x;
 int max_y;
@@ -27,18 +30,29 @@ int main (int argc, char *argv[]) {
   changeMode();
   while((ch = getch()) != KEY_F(1)){
     if (ch == 127 || ch == KEY_BACKSPACE){
-      moveCursor(-1, 0);
-      delch();
+      if (col == 0){
+        moveCursor(max_x, -1);
+        delch();
+      }
+      else{
+        moveCursor(-1, 0);
+        delch();
+      }
     }
     else if (ch == 27){
       changeMode();
     }
+    
     else if (mode == 0){
-      addch(ch);
-      col += 1;
-
+      if (ch == '\n' || ch == KEY_ENTER) {
+        moveCursor(-col,1);
+        insertln();
+      } else {
+        insch(ch);
+        moveCursor(1, 0);
+      }
     }
-    else{
+    else if (mode == 1 && ch != KEY_ENTER){
       switch (ch) {
         case 'H': case 'h':
           moveCursor(-1,0);
@@ -60,7 +74,6 @@ int main (int argc, char *argv[]) {
   endwin();
   return 0;
 }
-
 
 int changeMode(){
   if (mode == 0){
@@ -89,3 +102,4 @@ int moveCursor(int colDelta, int rowDelta){
   }
   return 1;
 }
+
