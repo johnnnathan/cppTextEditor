@@ -26,7 +26,19 @@ int moveDown();
 
 int main (int argc, char *argv[]) {
   int ch;
-  initscr();
+
+  if (argc > 1) {
+      FILE *file = fopen(argv[1], "r");
+    if (file) {
+      fclose(file);
+      scr_restore(argv[1]); // Restore the screen from the FILE
+      } else {
+          fprintf(stderr, "Error: Unable to open file '%s'\n", argv[1]);
+          return 1;
+      }
+  } else {
+    initscr(); // Initialize the screen
+  }
   keypad(stdscr, TRUE);
   cbreak();
   noecho();
@@ -74,6 +86,15 @@ int main (int argc, char *argv[]) {
         case 'L': case 'l':
           moveRight();
           break;
+        case 'd':
+          move(row,0);
+          deleteln();
+          break;
+        case 'D':
+          move(0,0);
+          erase();
+          break;
+          
       }
     }
 
