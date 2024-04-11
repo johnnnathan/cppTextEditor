@@ -16,6 +16,14 @@ int max_y;
 int changeMode();
 int moveCursor(int colDelta, int rowDelta);
 
+
+int moveRight();
+int moveLeft();
+int moveUp();
+int moveDown();
+
+
+
 int main (int argc, char *argv[]) {
   int ch;
   initscr();
@@ -35,7 +43,7 @@ int main (int argc, char *argv[]) {
         delch();
       }
       else{
-        moveCursor(-1, 0);
+        moveLeft();
         delch();
       }
     }
@@ -49,22 +57,22 @@ int main (int argc, char *argv[]) {
         insertln();
       } else {
         insch(ch);
-        moveCursor(1, 0);
+        moveRight();
       }
     }
     else if (mode == 1 && ch != KEY_ENTER){
       switch (ch) {
         case 'H': case 'h':
-          moveCursor(-1,0);
+          moveLeft();
           break;
         case 'J': case'j':
-          moveCursor(0, 1);
+          moveDown();
           break;
         case 'K': case 'k':
-          moveCursor(0,-1);
+          moveUp();
           break;
         case 'L': case 'l':
-          moveCursor(1,0);
+          moveRight();
           break;
       }
     }
@@ -103,3 +111,19 @@ int moveCursor(int colDelta, int rowDelta){
   return 1;
 }
 
+int moveDown(){
+  moveCursor(0,1);
+  return 0;
+}
+int moveLeft(){
+  moveCursor(-1,0);
+  return 0;
+}
+int moveRight(){
+  moveCursor(1,0);
+  return 0;
+}
+int moveUp(){
+  moveCursor(0, -1);
+  return 0;
+}
