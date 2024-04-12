@@ -1,5 +1,6 @@
 
 #include <cstdio>
+#include <cstdlib>
 #include <ncurses.h>
 
 #include <cstdio>
@@ -8,7 +9,7 @@
 
 int row = 0;
 int col = 0;
-int mode = 1; // should be 0 for insert and 1 for normal
+int mode = 0; // should be 0 for insert and 1 for normal
 
 int max_x;
 int max_y;
@@ -27,18 +28,18 @@ int moveDown();
 int main (int argc, char *argv[]) {
   int ch;
 
-  if (argc > 1) {
-      FILE *file = fopen(argv[1], "r");
-    if (file) {
-      fclose(file);
-      scr_restore(argv[1]); // Restore the screen from the FILE
-      } else {
-          fprintf(stderr, "Error: Unable to open file '%s'\n", argv[1]);
-          return 1;
-      }
-  } else {
-    initscr(); // Initialize the screen
+  FILE *src;
+  if (argc != 2){
+    printf("Filename missing!");
+    exit(EXIT_FAILURE);
   }
+  src = fopen(argv[1], "r");
+  if (src == NULL){
+    perror("fopen");
+    exit(EXIT_FAILURE);
+  }
+  initscr();
+  refresh();
   keypad(stdscr, TRUE);
   cbreak();
   noecho();
@@ -47,6 +48,18 @@ int main (int argc, char *argv[]) {
   changeMode();
 
   getmaxyx(stdscr, max_y, max_x);
+
+  while ((ch = fgetc(src)) != EOF) {
+    if (ch == '\n') {
+      moveCursor(-col, 1);
+      insertln();
+    } else {
+      insch(ch);
+      moveRight();
+    }
+  }
+  fclose(src);
+  refresh();
   changeMode();
   while((ch = getch()) != KEY_F(1)){
     if (ch == 127 || ch == KEY_BACKSPACE){
@@ -94,6 +107,16 @@ int main (int argc, char *argv[]) {
           move(0,0);
           erase();
           break;
+        case 'S':
+          src = fopen(argv[1], "w");
+          if (src == NULL){
+            perror("fopen");
+            exit(EXIT_FAILURE);
+          }
+          putwin(stdscr, src);
+          fclose(src);
+          break;
+        
           
       }
     }
